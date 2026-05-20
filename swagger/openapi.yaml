@@ -1,0 +1,116 @@
+openapi: 3.0.3
+info:
+  title: StockWise Inventory API
+  version: 1.0.0
+  description: CRUD API for small shop or home inventory.
+servers:
+  - url: http://localhost:3000
+paths:
+  /api/products:
+    get:
+      summary: List products
+      parameters:
+        - in: query
+          name: search
+          schema:
+            type: string
+        - in: query
+          name: category
+          schema:
+            type: string
+        - in: query
+          name: lowStock
+          schema:
+            type: string
+            enum: ["true"]
+      responses:
+        "200":
+          description: Product list
+    post:
+      summary: Create product
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ProductInput"
+      responses:
+        "201":
+          description: Created
+        "400":
+          description: Validation error
+        "409":
+          description: SKU conflict
+  /api/products/{id}:
+    get:
+      summary: Get product by id
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Product details
+        "404":
+          description: Not found
+    put:
+      summary: Update product
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ProductInput"
+      responses:
+        "200":
+          description: Updated
+        "400":
+          description: Validation error
+        "404":
+          description: Not found
+        "409":
+          description: SKU conflict
+    delete:
+      summary: Delete product
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Deleted
+        "404":
+          description: Not found
+components:
+  schemas:
+    ProductInput:
+      type: object
+      required: [name, sku, category, quantity, minStock, price]
+      properties:
+        name:
+          type: string
+        sku:
+          type: string
+        category:
+          type: string
+        quantity:
+          type: integer
+          minimum: 0
+        minStock:
+          type: integer
+          minimum: 0
+        price:
+          type: number
+          minimum: 0
+        location:
+          type: string
