@@ -40,6 +40,15 @@ function buildProductController(service) {
       }
       res.status(200).json(result.data);
     },
+
+    adjustStock: async (req, res) => {
+      const result = await service.adjustStock(Number(req.params.id), req.body);
+      if (result.error) {
+        res.status(result.error.status).json({ error: result.error.message });
+        return;
+      }
+      res.status(200).json(result.data);
+    },
   };
 }
 

@@ -91,6 +91,36 @@ paths:
           description: Deleted
         "404":
           description: Not found
+  /api/products/{id}/adjust-stock:
+    post:
+      summary: Adjust product quantity (admin)
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [action, amount]
+              properties:
+                action:
+                  type: string
+                  enum: [IN, OUT]
+                amount:
+                  type: integer
+                  minimum: 1
+      responses:
+        "200":
+          description: Quantity adjusted
+        "400":
+          description: Invalid action or amount
+        "404":
+          description: Product not found
 components:
   schemas:
     ProductInput:

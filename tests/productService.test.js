@@ -46,4 +46,34 @@ describe("ProductService", () => {
 
     expect(result.error.status).toBe(409);
   });
+
+  it("decreases stock with OUT action", async () => {
+    const repo = createRepoMock({
+      findById: jest.fn().mockResolvedValue({ id: 1, quantity: 10 }),
+      updateQuantity: jest.fn().mockResolvedValue({
+        id: 1,
+        name: "Rice",
+        sku: "SKU-1",
+        category: "Food",
+        quantity: 7,
+        min_stock: 2,
+        price: 3.5,
+        location: null,
+        created_at: "2026-01-01",
+        updated_at: "2026-01-02",
+      }),
+    });
+    const service = new ProductService(repo);
+    const result = await service.adjustStock(1, { action: "OUT", amount: 3 });
+    expect(result.data.quantity).toBe(7);
+  });
+
+  it("blocks decreasing below zero", async () => {
+    const repo = createRepoMock({
+      findById: jest.fn().mockResolvedValue({ id: 1, quantity: 2 }),
+    });
+    const service = new ProductService(repo);
+    const result = await service.adjustStock(1, { action: "OUT", amount: 5 });
+    expect(result.error.status).toBe(400);
+  });
 });

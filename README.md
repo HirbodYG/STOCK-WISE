@@ -44,7 +44,8 @@ npm run dev
 ```
 
 3. Open:
-- App UI: <http://localhost:3000>
+- Stock Page (read-only): <http://localhost:3000>
+- Admin Panel (manage/update stock): <http://localhost:3000/admin.html>
 - Swagger Docs: <http://localhost:3000/api-docs>
 
 ## API Overview
@@ -54,6 +55,7 @@ npm run dev
 - `POST /api/products` create product
 - `PUT /api/products/:id` update product
 - `DELETE /api/products/:id` delete product
+- `POST /api/products/:id/adjust-stock` admin quantity adjustment (`IN` / `OUT`)
 
 ## Validation Rules
 

@@ -63,6 +63,36 @@ class ProductService {
     await this.repository.remove(id);
     return { data: { message: "product deleted" } };
   }
+
+  async adjustStock(id, data) {
+    const existing = await this.repository.findById(id);
+    if (!existing) {
+      return { error: { status: 404, message: "product not found" } };
+    }
+
+    const amount = Number(data.amount);
+    if (!Number.isFinite(amount) || amount <= 0 || !Number.isInteger(amount)) {
+      return { error: { status: 400, message: "amount must be a positive integer" } };
+    }
+
+    const action = String(data.action || "").toUpperCase();
+    if (action !== "IN" && action !== "OUT") {
+      return { error: { status: 400, message: "action must be IN or OUT" } };
+    }
+
+    let nextQuantity = Number(existing.quantity);
+    if (action === "IN") {
+      nextQuantity += amount;
+    } else {
+      if (amount > nextQuantity) {
+        return { error: { status: 400, message: "cannot decrease below zero stock" } };
+      }
+      nextQuantity -= amount;
+    }
+
+    const updated = await this.repository.updateQuantity(id, nextQuantity);
+    return { data: mapProduct(updated) };
+  }
 }
 
 function mapProduct(row) {

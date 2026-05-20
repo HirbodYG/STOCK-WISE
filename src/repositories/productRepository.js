@@ -40,7 +40,7 @@ class ProductRepository {
       params.push(String(filters.category).toLowerCase());
     }
 
-    if (filters.lowStock === "true") {
+    if (isEnabled(filters.lowStock)) {
       sql += " AND quantity <= min_stock";
     }
 
@@ -81,6 +81,19 @@ class ProductRepository {
   async remove(id) {
     return this.db.run("DELETE FROM products WHERE id = ?", [id]);
   }
+
+  async updateQuantity(id, quantity) {
+    const now = new Date().toISOString();
+    await this.db.run(
+      "UPDATE products SET quantity = ?, updated_at = ? WHERE id = ?",
+      [Number(quantity), now, id]
+    );
+    return this.findById(id);
+  }
+}
+
+function isEnabled(value) {
+  return value === true || String(value).toLowerCase() === "true";
 }
 
 module.exports = ProductRepository;
